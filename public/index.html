@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kerneu Store</title>
+
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+    .category {
+        margin: 20px 0;
+    }
+    .subcategory {
+        margin-left: 20px;
+    }
+    .product {
+        margin-left: 40px;
+    }
+</style>
+</head>
+<body>
+  <h1>Product Catalog</h1>
+  <div id="productCatalog"></div>
+
+  <script>
+    async function fetchProducts() {
+      const response = await fetch('/api/products');
+      const data = await response.json();
+      displayProducts(data);
+    }
+
+    function displayProducts(data) {
+      const catalog = document.getElementById('productCatalog');
+      for (const categoryId in data.categories) {
+        const category = data.categories[categoryId];
+        const categoryDiv = document.createElement('div');
+        categoryDiv.className = 'category';
+        categoryDiv.innerHTML = `<h2>${category.categoryName}</h2>`;
+
+        for (const subcategoryId in category.subcategories) {
+          const subcategory = category.subcategories[subcategoryId];
+          const subcategoryDiv = document.createElement('div');
+          subcategory.className = 'subcategory';
+          subcategory.innerHTML = `<h3>${subcategory.subcategoryName}</h3>`;
+
+          subcategory.products.forEach(product => {
+            const productDiv = document.createElement('div');
+            productDiv.className = 'product';
+            productDiv.innerHTML = `
+              <p><strong>${product.name}</strong></p>
+              <p>${product.description}</p>
+              <p>Price: $${product.price}</p>
+              <img src="${product.imageUrl}" alt="${product.name}" width="100"`;
+              subcategoryDiv.appendChild(productDiv);
+          });
+
+          categoryDiv.appendChild(productDiv);
+        }
+
+        catalog.appendChild(categoryDiv);
+      }
+    }
+
+    fetchProducts();
+  </script>
+</body>
+</html>
